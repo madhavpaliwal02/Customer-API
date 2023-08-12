@@ -26,7 +26,7 @@ public class CustomerCtrl {
 
 			// retrieving from db
 			model.addAttribute("customer", "");
-			return "home";
+			return "Hello from GreenStitch";
 		}
 		model.addAttribute("msg", "Either Email or Password is incorrect");
 		return "index";
