@@ -13,15 +13,15 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtTokenProvider {
 
-	public JwtTokenClaims getClaimsFromToken(String token) {
-		SecretKey key = Keys.hmacShaKeyFor(SecurityContext.JWT_KEY.getBytes());
+    public JwtTokenClaims getClaimsFromToken(String token) {
+        SecretKey key = Keys.hmacShaKeyFor(SecurityContext.JWT_KEY.getBytes());
 
-		Claims claims = Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
+        Claims claims = Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
 
-		String username = String.valueOf(claims.get("username"));
+        String username = String.valueOf(claims.get("username"));
 
-		JwtTokenClaims jwtTokenClaims = new JwtTokenClaims(username);
+        JwtTokenClaims jwtTokenClaims = new JwtTokenClaims(username);
 
-		return jwtTokenClaims;
-	}
+        return jwtTokenClaims;
+    }
 }

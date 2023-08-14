@@ -22,36 +22,42 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class JwtTokenGeneratorFilter extends OncePerRequestFilter {
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
+    public static String jwtToken;
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
-		if (authentication != null) {
-			SecretKey key = Keys.hmacShaKeyFor(SecurityContext.JWT_KEY.getBytes());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-			String jwt = Jwts.builder().setIssuer("customer").setIssuedAt(new Date())
-					.claim("authorities", populateAuthorities(authentication.getAuthorities()))
-					.claim("username", authentication.getName())
-					.setExpiration(new Date(new Date().getTime() + 300000000)).signWith(key).compact();
+        if (authentication != null) {
+            SecretKey key = Keys.hmacShaKeyFor(SecurityContext.JWT_KEY.getBytes());
 
-			response.setHeader(SecurityContext.HEADER, jwt);
-		}
-		filterChain.doFilter(request, response);
-	}
+            String jwt = Jwts.builder()
+                    .setIssuer("customer")
+                    .setIssuedAt(new Date())
+                    .claim("authorities", populateAuthorities(authentication.getAuthorities()))
+                    .claim("username", authentication.getName())
+                    .setExpiration(new Date(new Date().getTime() + 300000000))
+                    .signWith(key).compact();
 
-	public String populateAuthorities(Collection<? extends GrantedAuthority> collection) {
-		Set<String> authorities = new HashSet<>();
+            response.setHeader(SecurityContext.HEADER, jwt);
+            jwtToken = jwt;
+        }
+        filterChain.doFilter(request, response);
+    }
 
-		for (GrantedAuthority authority : collection)
-			authorities.add(authority.getAuthority());
+    public String populateAuthorities(Collection<? extends GrantedAuthority> collection) {
+        Set<String> authorities = new HashSet<>();
 
-		return String.join(",", authorities);
-	}
+        for (GrantedAuthority authority : collection)
+            authorities.add(authority.getAuthority());
 
-	protected boolean shouldNotFilter(HttpServletRequest req) throws ServletException {
-		return !req.getServletPath().equals("/login");
-	}
+        return String.join(",", authorities);
+    }
+
+    protected boolean shouldNotFilter(HttpServletRequest req) throws ServletException {
+        return !req.getServletPath().equals("/login");
+    }
 
 }

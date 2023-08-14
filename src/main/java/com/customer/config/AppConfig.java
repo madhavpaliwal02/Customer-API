@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,21 +16,24 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 public class AppConfig {
 
-	@Bean
-	SecurityFilterChain securityConfiguration(HttpSecurity http) throws Exception {
+    @Bean
+    SecurityFilterChain securityConfiguration(HttpSecurity http) throws Exception {
 
-		http.cors(withDefaults())
-				.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authorizeHttpRequests(authorize -> authorize.requestMatchers(HttpMethod.POST, "/register").permitAll()
-						.anyRequest().authenticated())
-				.addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
-				.addFilterBefore(new JwtTokenValidationFilter(), BasicAuthenticationFilter.class)
-				.csrf((csrf) -> csrf.disable()).formLogin(withDefaults()).httpBasic(withDefaults());
-		return http.build();
-	}
+        http
+                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(requests -> requests
+                        .requestMatchers(HttpMethod.POST, "/")
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .addFilterAfter(new JwtTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenValidationFilter(), BasicAuthenticationFilter.class)
+                .csrf((csrf) -> csrf.disable())
+                .formLogin(withDefaults()).httpBasic(withDefaults());
+        return http.build();
+    }
 
-	@Bean
-	PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
