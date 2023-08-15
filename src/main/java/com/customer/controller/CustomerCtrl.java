@@ -1,13 +1,9 @@
 package com.customer.controller;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-// import org.springframework.stereotype.Controller;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,66 +13,89 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.customer.model.Customer;
 import com.customer.model.User;
-import com.customer.repo.CustomerRepo;
+//import com.customer.model.User;
 import com.customer.service.CustomerService;
 
-import lombok.RequiredArgsConstructor;
-
-@RestController
-@RequiredArgsConstructor
+@Controller
 public class CustomerCtrl {
 
-	private final CustomerService customerService;
-	private final CustomerRepo customerRepo;
+	@Autowired
+	private CustomerService customerService;
 
-	@GetMapping
-	public String home() {
+	// Login Page
+	@GetMapping("/")
+	public String index() {
 		return "index";
 	}
 
-	// Admin login
+	// Login
 	@PostMapping("/login")
-	public String loginCustomer(@ModelAttribute User user, Model model) {
-		if (user.getLogin_Id().equals("admin") &&
-				user.getPassword().equals("admin")) {
-			model.addAttribute("msg", "Successfully Login");
-
-			// Get all customers
-			List<Customer> list = customerService.getAllCustomers();
-			model.addAttribute("customer", list);
-			return "home";
+	public String login(@ModelAttribute User user, Model model, RedirectAttributes redirectAttributes) {
+		if (user.getLogin_id().equals("admin") && user.getPassword().equals("admin")) {
+			redirectAttributes.addFlashAttribute("msg", "Login Success");
+			return "redirect:/home";
 		}
-		model.addAttribute("msg", "Either Login Id or Password is incorrect");
+		redirectAttributes.addFlashAttribute("msg", "Login Failure");
 		return "index";
+	}
+
+	// All Customer
+//	@GetMapping({ "/login", "home" })
+	@GetMapping("/home")
+	public String home(Model model) {
+		model.addAttribute("customer", customerService.getCustomer());
+		return "home";
 	}
 
 	@GetMapping("/add")
-	public String addCustomer(@RequestBody Customer customer) {
-		customerService.createCustomer(customer);
+	public String addCustomer() {
 		return "register";
 	}
 
-	@PostMapping("/signup")
-	public String registerCustomer(@ModelAttribute Customer customer, Model model) {
-		// Saving database
-		customerService.createCustomer(customer);
-		return "home";
+	// Create Customer
+	@PostMapping("/register")
+	public String registerCustomer(@ModelAttribute Customer customer, RedirectAttributes requiredAttributes) {
+		if (customerService.createCustomer(customer)) {
+			requiredAttributes.addFlashAttribute("msg", "Successfully saved Customer");
+			return "redirect:/home";
+		}
+		requiredAttributes.addFlashAttribute("msg", "Customer not saved ! Please try again");
+		return "redirect:/register";
 	}
 
-	@PutMapping("/{customerId}")
-	public String updateCustomer(@PathVariable String customerId, @ModelAttribute Customer customer) {
-		customerService.updateCustomer(customerId, customer);
-		return "home";
+	@GetMapping("/update/{id}")
+	public String update(@PathVariable String id, Model model) {
+		model.addAttribute("customer", customerService.getCustomer(id));
+		return "update";
 	}
 
-	@DeleteMapping("/{customerId}")
-	public String deleteCustomer(@PathVariable String customerId) {
+	// Update Customer
+	@PostMapping("/updating/{id}")
+	public String updateCustomer(@ModelAttribute Customer customer, @PathVariable String id,
+			RedirectAttributes requiredAttributes) {
+		if (customerService.updateCustomer(id, customer)) {
+			requiredAttributes.addFlashAttribute("msg", "Update Successfully");
+			return "redirect:/home";
+		}
+		requiredAttributes.addFlashAttribute("msg", "Customer not updated ! Please try again");
+		return "redirect:/update/" + id;
+
+	}
+
+	// Delete Customer
+	@GetMapping("/delete/{id}")
+	public String deleteCustomer(@PathVariable String id, RedirectAttributes requiredAttributes) {
 		// Delete from db
-		customerService.deleteCustomer(customerId);
-		return "home";
+		if (customerService.deleteCustomer(id)) {
+			requiredAttributes.addFlashAttribute("msg", "Successfully Deleted");
+			return "redirect:/home";
+		}
+		requiredAttributes.addFlashAttribute("msg", "Customer not deleted ! Please try again");
+		return "redirect:/home";
 	}
 
 }

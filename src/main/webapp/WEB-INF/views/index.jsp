@@ -1,10 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
-<html>
-
-<head>
 <%@include file="./base.jsp"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
+<html>
+<head>
 <title>Customer CRUD | Login Page</title>
 </head>
 
@@ -13,9 +13,9 @@
 		<h3>Login Page</h3>
 
 
-		<form action="signin" method="POST">
+		<form action="/login" method="POST">
 			<div class="mb-3">
-				<input class="form-control " name="loginId" type="text"
+				<input class="form-control " name="login_id" type="text"
 					placeholder="Login ID">
 			</div>
 			<div class="mb-3">

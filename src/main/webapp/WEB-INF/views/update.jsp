@@ -4,58 +4,67 @@
 
 <head>
 <%@include file="./base.jsp"%>
-<title>Customer CRUD | Registration</title>
+<title>Customer CRUD | Update</title>
 </head>
 
 <body>
 	<div class="container mt-3 mx-5">
 		<h5 class="ml-5">Customer Details</h5>
 
-		<form class="container mx-5" action="signup" method="POST">
+		<form class="container mx-5"
+			action="${pageContext.request.contextPath }/updating/${customer.id }"
+			method="POST">
 
 			<div class="row mx-5 my-3">
 				<div class="col mr-3">
 					<input name="first_name" type="text" class="form-control"
-						placeholder="Enter First Name" required />
+						value="${customer.first_name }" placeholder="Enter First Name"
+						required />
 				</div>
 				<div class="col mr-3">
 					<input name="last_name" type="text" class="form-control"
-						placeholder="Enter Last Name" required />
+						value="${customer.last_name }" placeholder="Enter Last Name"
+						required />
 				</div>
 			</div>
 
 			<div class="row mx-5 my-3">
 				<div class="col mr-3">
 					<input name="street" type="text" class="form-control"
-						placeholder="Enter Street" required />
+						value="${customer.street }" placeholder="Enter Street" required />
 				</div>
 				<div class="col mr-3">
 					<input name="address" type="text" class="form-control"
-						placeholder="Enter Address" required />
+						value="${customer.address }" placeholder="Enter Address" required />
 				</div>
 			</div>
+
 			<div class="row mx-5 my-3">
 				<div class="col mr-3">
 					<input name="city" type="text" class="form-control"
-						placeholder="Enter City" required />
+						value="${customer.city }" placeholder="Enter City" required />
 				</div>
 				<div class="col mr-3">
 					<input name="state" type="text" class="form-control"
-						placeholder="Enter State" required />
+						value="${customer.state }" placeholder="Enter State" required />
 				</div>
 			</div>
+
 			<div class="row mx-5 my-3">
 				<div class="col mr-3">
-					<input name="email" type="text" class="form-control"
-						placeholder="Enter Email" required />
+					<input name="email" type="email" class="form-control"
+						value="${customer.email }" placeholder="Enter Email" required />
 				</div>
 				<div class="col mr-3">
 					<input name="phone" type="text" class="form-control"
-						placeholder="Enter Phone" required />
+						value="${customer.phone }" placeholder="Enter Phone" required />
 				</div>
 			</div>
+
 			<div class="col mx-auto my-3">
-				<button type="submit" class="btn btn-primary">Submit</button>
+				<a
+					href="${pageContext.request.contextPath }/updating/${customer.id }"><button
+						type="submit" class="btn btn-primary">Update</button></a>
 			</div>
 		</form>
 	</div>

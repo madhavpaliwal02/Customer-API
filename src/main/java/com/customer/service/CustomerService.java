@@ -5,18 +5,14 @@ import java.util.List;
 import com.customer.model.Customer;
 
 public interface CustomerService {
-    /* Create a Customer */
-    public Customer createCustomer(Customer customer);
 
-    /* Get all Customers */
-    public List<Customer> getAllCustomers();
+	public boolean createCustomer(Customer customer);
 
-    /* Get a Customer */
-    public Customer getCustomer(String customerId);
+	public List<Customer> getCustomer();
 
-    /* Update a Customer */
-    public Customer updateCustomer(String customerId, Customer customer);
+	public Customer getCustomer(String id);
 
-    /* Delete a Customer */
-    public void deleteCustomer(String customerId);
+	public boolean updateCustomer(String id, Customer customer);
+
+	public boolean deleteCustomer(String id);
 }
